@@ -8,7 +8,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post("/mutation")
-  async calculateMutation(@Body() createMutation: CreateMutationDTO, @Res() response: Response) {
+  async calculateMutation(@Body() createMutation: CreateMutationDTO, @Res() response: any) {
     const hasMutation = await this.appService.hashMutation(createMutation.dna);
     const code = hasMutation
       ? HttpStatus.OK

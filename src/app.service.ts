@@ -43,7 +43,7 @@ export class AppService {
       hasMutation = this.verifyRepiteMoreThanFourTimes(_matrix.join(""));
     }
 
-    await this.mutationsService.createMutation(dna, hasMutation);  
+    await this.mutationsService.createMutation(dna, hasMutation);
     return hasMutation;
   }
   

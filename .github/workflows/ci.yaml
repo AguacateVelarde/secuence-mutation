@@ -1,0 +1,17 @@
+name: kepit-backend pipe
+on:
+  push:
+    branches:
+      - master
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    container:
+      image: node:14
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install & Tests
+        run: |
+          npm install
+          npm run test
+          

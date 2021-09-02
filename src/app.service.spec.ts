@@ -1,38 +1,33 @@
-import {AppService} from './app.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppService } from './app.service';
+
 
 describe("Test suite", () => {
-  let appService: AppService;
-  beforeAll(() => {
-    appService = new AppService();
+  let service: AppService;
+  
+  beforeAll(async () => {
+    const mutationServiceMock = {
+      getSummary: () => Promise.resolve({}),
+      createMutation: () => Promise.resolve({ message: "success created" })
+    }
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [AppService,
+        { provide: 'MutationsService', useValue: mutationServiceMock },
+      ],
+    }).compile();
+
+    service = module.get<AppService>(AppService);
+
   })
   test("Should exist", (done) => {
-    expect(new AppService()).toBeDefined();
+    expect(service).toBeDefined();
     done();
   });
 
-  test("Should no empty request", (done) => {
+
+  test("Should catch bad char", async (done) => {
     try {
-      appService.hashMutation(null);
-    } catch (e) {
-      expect(e.message).toBe("DNA is not empty");
-    }
-
-    done();
-  });
-
-  test("Should array request", (done) => {
-    try {
-      (appService as any).hashMutation("asda");
-    } catch (e) {
-      expect(e.message).toBe("DNA should be an array");
-    }
-
-    done();
-  });
-
-  test("Should catch bad char", (done) => {
-    try {
-      appService.hashMutation(["ADFS", "AGGG", "DCCA", "GTTG"]);
+      await service.hashMutation(["ADFS", "AGGG", "DCCA", "GTTG"]);
     } catch (e) {
       expect(e.message).toBe("DNA only accept valid chars like: A,T,G,C");
     }
@@ -40,26 +35,23 @@ describe("Test suite", () => {
     done();
   });
 
-  test("Should response is false 'cause the array is empty", (done) => {
-    const response = appService.hashMutation([]);
-    expect(response).toBe(false);
-    done();
-  });
+ 
 
-  test("Should return true cause send a mutation simple array ", (done) => {
-    const response = appService.hashMutation([
+  test("Should return true cause send a mutation simple array ", async (done) => {
+    const response = await service.hashMutation([
       "ATTGT",
       "AATGT",
       "GTTGT",
-      "ATTGT",
+      "ATTGT", 
       "ATTGT",
     ]);
+
     expect(response).toBe(true);
     done();
   });
 
-  test("Should return true cause send a mutation simple array ", (done) => {
-    const response = appService.hashMutation([
+  test("Should return true cause send a mutation simple array ", async (done) => {
+    const response = await service.hashMutation([
       "ATTTT",
       "AATGT",
       "GTTGT",
@@ -69,4 +61,17 @@ describe("Test suite", () => {
     expect(response).toBe(true);
     done();
   });
+
+  test("Should return true cause send a mutation simple array ", async (done) => {
+    const response = await service.hashMutation([
+      "ATTAT",
+      "AATGA",
+      "GTAAT",
+      "ATTGT",
+      "ATTGT",
+    ]);
+    expect(response).toBe(false);
+    done();
+  });
+
 });
